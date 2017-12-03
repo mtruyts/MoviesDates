@@ -25,7 +25,6 @@ public class View implements Observer {
 	private Model model;
 	Dia dia = new Dia();
 	ControllerNew controllernew;
-	private int t =2;
 
 	public View(Model model) {
 		this.model = model; 

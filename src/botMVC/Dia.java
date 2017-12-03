@@ -3,6 +3,8 @@ package botMVC;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Dia {
 
@@ -15,6 +17,11 @@ public class Dia {
 		this.data = data;
 		this.fs = fs;
 		this.titulo = titulo;
+	}
+
+	public String today(){
+		LocalDate localDate = LocalDate.now();
+		return DateTimeFormatter.ofPattern("dd/MM/yyy").format(localDate);
 	}
 
 	public Dia() {

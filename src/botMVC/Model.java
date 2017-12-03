@@ -9,6 +9,7 @@ public class Model implements Subject {
 	private List<Dia> datas = new LinkedList<Dia>();
 	private List<Observer> observers = new LinkedList<Observer>();
 	private static Model uniqueInstance;
+	private Dia d = new Dia();
 
 	public void addData(Dia data) {
 		this.datas.add(data);
@@ -74,7 +75,7 @@ public class Model implements Subject {
 			}
 		}
 	}
-	
+
 	public void listaSerie(Update update) {
 		String data = null;
 
@@ -100,6 +101,39 @@ public class Model implements Subject {
 				}
 			}
 		}
+	}
+
+	public void addNewData(Update update) {
+		String data = null, atual = "";
+		int cont = 0;
+		String[] d = new String[3];
+		data = update.message().text().toLowerCase().trim().replace(" ", "");
+
+		for(int i=1; i<=data.length();i++) {
+			if(!(data.substring(i-1,i).equalsIgnoreCase(","))) {
+				atual+=data.substring(i-1,i);
+			} else {
+				d[cont] = atual;
+				atual ="";
+				cont++;
+			}
+		}
+		d[2] = atual;
+		this.addData(new Dia(d[0], d[1], d[2]));	
+		this.notifyObservers(update.message().chat().id(), "Adicionado com sucesso.");
+	}
+
+	public void exibirToday(Update update) {
+		String data = null;
+		for(Dia lista: datas){
+			if(lista.getData().equals(d.today())){
+				data = lista.getData();
+				this.notifyObservers(update.message().chat().id(), lista.getData() + " - " + lista.getTitulo());
+			}
+		}
+		if(data == null){
+			this.notifyObservers(update.message().chat().id(), "Nenhum Filme ou serie em exibição hoje ):");
+		}		
 	}
 
 }

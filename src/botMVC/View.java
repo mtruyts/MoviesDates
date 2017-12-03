@@ -23,6 +23,9 @@ public class View implements Observer {
 	boolean searchBehaviour = false;
 	Controller controller; // Conecta view com o controller
 	private Model model;
+	Dia dia = new Dia();
+	ControllerNew controllernew;
+	private int t =2;
 
 	public View(Model model) {
 		this.model = model; 
@@ -30,7 +33,7 @@ public class View implements Observer {
 
 	public void receiveUsersMessages() {
 
-		int queuesIndex=0; //controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
+		int queuesIndex = 0; //controle de off-set, isto é, a partir deste ID será lido as mensagens pendentes na fila
 
 		//loop infinito pode ser alterado por algum timer de intervalo curto
 		while (true) {
@@ -66,10 +69,23 @@ public class View implements Observer {
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(),"Digite Exibir(para exibir todas as series) ou o nome da Serie:"));
 					this.searchBehaviour = true;
 
+				}else if(update.message().text().toLowerCase().equals("Today")){
+					setController(new ControllerToday(model, this));
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(),"Hoje é " + dia.today() +  " ?"));
+					searchBehaviour = true;
+
+				}else if(update.message().text().toLowerCase().equals("Add")){
+					setController(new ControllerNewAdd(model, this));
+					t = 0;
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(),"Digite a Data, filme ou serie separados por vigula como os exemplos abaixo:\n17/11/2017, Serie, Justiceiro\n"));
+					searchBehaviour = true;
+
 				}else if(this.searchBehaviour==false) {
 					sendResponse = bot.execute(new SendMessage(update.message().chat().id(),"Olá, seja bem vindo ao MoviesDates bot!\n"
-							+ "                                                              Fique por dentro das datas dos seus filmes e series favoritos."));
-					sendResponse = bot.execute(new SendMessage(update.message().chat().id(),"Deseja pesquisar por Data, Filme ou Serie?"));
+							+                                                               "Fique por dentro das datas dos seus filmes e series favoritos."));
+					sendResponse = bot.execute(new SendMessage(update.message().chat().id(),"Deseja pesquisar por Data, Filme ou Serie?\n"
+							+                                                               "Digite Add para adicionar um novo filme ou serie\n"
+							+                                                               "Digite Today para exibir os filmes e series diposniveis hoje\n"));
 					System.out.println("Mensagem Enviada?" +sendResponse.isOk());
 				}
 
@@ -89,6 +105,10 @@ public class View implements Observer {
 
 	public void setController(Controller controller) {
 		this.controller = controller;
+	}
+
+	public void setController(ControllerNew controllernew){
+		this.controllernew = controllernew;
 	}
 
 	public void sendTypingMessage(Update update) {
